@@ -21,8 +21,8 @@ git_branch=$(config "git_branch")
 git_repo=$(config "git_repo")
 
 # new site database name and username
-dest_db=$(config "dest_db")
-dest_db_username=$(config "dest_db_username")
+dest_db=$(config "db_name")
+dest_db_username=$(config "db_username")
 
 site_build_dir=$deploy_dir/'site_new'
 site_backup_dir=$deploy_dir/'site_old'
