@@ -2,19 +2,25 @@
 composer=$(which composer)
 php=$(which php)
 
+# directory path of deploy.sh file
 deploy_dir=$(realpath $0)
 
+# function to get configuration values
 config(){
     cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
 }
 
+# document_root of magento 2
 document_root=$(config "document_root")
 
+# locales of site
 locales=$(config "locales")
 
+# git branch name and repository link
 git_branch=$(config "git_branch")
 git_repo=$(config "git_repo")
 
+# new site database name and username
 dest_db=$(config "dest_db")
 dest_db_username=$(config "dest_db_username")
 
