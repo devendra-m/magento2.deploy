@@ -2,7 +2,7 @@
 composer=$(which composer)
 php=$(which php)
 
-deploy_dir=$(realpath .)
+deploy_dir=$(realpath $0)
 
 config(){
     cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
