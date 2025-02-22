@@ -1,5 +1,5 @@
 # magento2.deploy
-This script is for deploying magento 2 from git.
+This script is for deploying magento 2 from git and create new site keeping same magento 2 directory structure.
 
 1. Create directory deploy and download deploy.sh and deploy.conf to that directory.
 2. Enter all configuration values in deploy.conf as per server configuration.
