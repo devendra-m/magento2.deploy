@@ -3,7 +3,7 @@ composer=$(which composer)
 php=$(which php)
 
 # directory path of deploy.sh file
-deploy_dir=$(realpath $0)
+deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
