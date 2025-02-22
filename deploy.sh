@@ -2,35 +2,28 @@
 composer=$(which composer)
 php=$(which php)
 
-# main directory for build, backup and document root
-main_dir='/var/www'
+deploy_dir=$(realpath .)
 
-# document root for magento 2 
-document_root=$main_dir/'public_html'
+config(){
+    cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
+}
 
-# locales of site
-locales='en_US en_GB'
+document_root=$(config "document_root")
 
-# git branch 
-git_branch='v2.4.7'
+locales=$(config "locales")
 
-# git repository link
-git_repo='git_username/git_repository_name'
+git_branch=$(config "git_branch")
+git_repo=$(config "git_repo")
 
-# directory for new build where code will be fetched from git and deployed
-site_build_dir=$main_dir/'new_build'
+dest_db=$(config "dest_db")
+dest_db_username=$(config "dest_db_username")
 
-# current site will be moved to backup site 
-$site_backup_dir=$main_dir/'site_backup'
+site_build_dir=$deploy_dir/'site_new'
+site_backup_dir=$deploy_dir/'site_old'
 
 # get database name and username from current site
 source_db=$(cat $document_root/app/etc/env.php | grep -o  "'dbname'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
 source_db_username=$(cat $document_root/app/etc/env.php | grep -o  "'username'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
-
-# create database in mysql 
-# database name and username for new build
-dest_db='database_name'
-dest_db_username='root'
 
 # database from current site will be imported to new build database
 read -p "Press y to create new database $dest_db: " input
