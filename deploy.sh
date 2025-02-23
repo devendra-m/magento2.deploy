@@ -44,8 +44,8 @@ if [ "$input" = "y" ];then
      rm $document_root/var/$source_db.sql
 fi
 
-# fetch from git and deploy in new build directory
-read -p "Press y to upgrade site:" input
+# fetch from git and deploy in next site directory
+read -p "Press y to deploy next site:" input
 if [ "$input" = "y" ];then
    if [ -d $site_next ];then
        rm -rf $site_next;
@@ -57,10 +57,10 @@ if [ "$input" = "y" ];then
    git pull origin $git_branch
    git checkout $git_branch
 
-   # copy env.php and config.php to new build
+   # copy env.php and config.php to next site
    cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_next/app/etc
 
-   # change database name in new build env.php
+   # change database name in next site env.php
    sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
 
    echo "Copy media files:"
@@ -76,8 +76,8 @@ if [ "$input" = "y" ];then
    $php -dmemory_limit=-1  $mage cache:flush
 fi
 
-# deploy new build to current site
-read -p "Press y to deploy new build to current site: " input
+# publish next site to current site
+read -p "Press y to publish next to current site: " input
 if [ -d  $site_next ] && [ "$input" = "y" ];then
     if [ -d $site_prev ];then
        rm -rf $site_prev;
@@ -85,8 +85,8 @@ if [ -d  $site_next ] && [ "$input" = "y" ];then
     mv $document_root $site_prev && mv $site_next $document_root
 fi
 
-# restore from backup to current site
-read -p "Press y to restore backup to current site: " input
+# restore from previous site to current site
+read -p "Press y to restore previous site to current site: " input
 if [ -d $site_prev ] && [ "$input" = "y" ];then
     if [ -d $site_next ];then
         rm -rf $site_next;
