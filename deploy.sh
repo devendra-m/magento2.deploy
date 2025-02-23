@@ -45,7 +45,7 @@ if [ "$input" = "y" ];then
 fi
 
 # fetch from git and deploy in next site directory
-read -p "Press y to deploy next site:" input
+read -p "Press y to deploy $site_next:" input
 if [ "$input" = "y" ];then
    if [ -d $site_next ];then
        rm -rf $site_next;
@@ -77,19 +77,21 @@ if [ "$input" = "y" ];then
 fi
 
 # publish next site to current site
-read -p "Press y to publish next to current site: " input
+read -p "Press y to move $site_next to $document_root: " input
 if [ -d  $site_next ] && [ "$input" = "y" ];then
     if [ -d $site_prev ];then
        rm -rf $site_prev;
     fi
+    echo "$document_root moved to $site_prev and $site_next moved to $document_root"
     mv $document_root $site_prev && mv $site_next $document_root
 fi
 
 # restore from previous site to current site
-read -p "Press y to restore previous site to current site: " input
+read -p "Press y to move $site_prev to $document_root: " input
 if [ -d $site_prev ] && [ "$input" = "y" ];then
     if [ -d $site_next ];then
         rm -rf $site_next;
     fi
+    echo "$document_root moved to $site_next and $site_prev moved to $document_root"
     mv $document_root $site_next && mv $site_prev $document_root
 fi
