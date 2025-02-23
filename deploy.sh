@@ -24,8 +24,8 @@ git_repo=$(config "git_repo")
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
-site_build_dir=$deploy_dir/'site_new'
-site_backup_dir=$deploy_dir/'site_old'
+site_next=$deploy_dir/'site_next'
+site_prev=$deploy_dir/'site_prev'
 
 # get database name and username from current site
 source_db=$(cat $document_root/app/etc/env.php | grep -o  "'dbname'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
@@ -46,8 +46,11 @@ fi
 
 # fetch from git and deploy in new build directory
 read -p "Press y to upgrade site:" input
-if [ ! -d $site_build_dir ] && [ "$input" = "y" ];then
-   mkdir $site_build_dir && cd $site_build_dir
+if [ "$input" = "y" ];then
+   if [ -d $site_next ];then
+       rm -rf $site_next;
+   fi
+   mkdir $site_next && cd $site_next
    
    git init
    git remote add origin git@github:$git_repo
@@ -55,17 +58,17 @@ if [ ! -d $site_build_dir ] && [ "$input" = "y" ];then
    git checkout $git_branch
 
    # copy env.php and config.php to new build
-   cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_build_dir/app/etc
+   cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_next/app/etc
 
    # change database name in new build env.php
-   sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_build_dir/app/etc/env.php
+   sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
 
    echo "Copy media files:"
-   cp -R $document_root/pub/media  $site_build_dir/pub/
+   cp -R $document_root/pub/media  $site_next/pub/
 
    $composer update
 
-   mage=$site_build_dir'/bin/magento'
+   mage=$site_next'/bin/magento'
    
    $php -dmemory_limit=-1  $mage setup:upgrade &&
    $php -dmemory_limit=-1  $mage setup:di:compile &&
@@ -75,12 +78,18 @@ fi
 
 # deploy new build to current site
 read -p "Press y to deploy new build to current site: " input
-if [ ! -d $site_backup_dir ] && [ -d  $site_build_dir ] && [ "$input" = "y" ];then
-    mv $document_root $site_backup_dir && mv $site_build_dir $document_root
+if [ -d  $site_next ] && [ "$input" = "y" ];then
+    if [ -d $site_prev ];then
+       rm -rf $site_prev;
+    fi
+    mv $document_root $site_prev && mv $site_next $document_root
 fi
 
 # restore from backup to current site
 read -p "Press y to restore backup to current site: " input
-if [ -d $site_backup_dir ] && [ "$input" = "y" ];then
-    mv $document_root $site_build_dir && mv $site_backup_dir $document_root
+if [ -d $site_prev ] && [ "$input" = "y" ];then
+    if [ -d $site_next ];then
+        rm -rf $site_next;
+    fi
+    mv $document_root $site_next && mv $site_prev $document_root
 fi
