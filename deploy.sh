@@ -27,6 +27,42 @@ dest_db_username=$(config "db_username")
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
 
+current=1
+
+list='"'$site_prev'","'$document_root'","'$site_next'"'
+
+node(){
+	node=$(($1+1))
+	echo $list | sed 's/,/\n/g' | tail -n +$node | head -n 1 | grep -o "[^'\"]*"
+
+}
+move(){
+
+    prevNode=$(node $(($current-1)))
+    currNode=$(node $current)
+    nextNode=$(node $(($current+1)))
+
+    if [ $1 = 'n' ];then
+		if [ -d $nextNode ] && [ ! -d $prevNode ];then
+			mv $currNode $prevNode && mv $nextNode $currNode
+		elif [ ! -d $nextNode ];then
+			echo "Next site $nextNode is not there"
+		elif [ -d $prevNode ];then
+			echo "Cannot move $currNode to $prevNode is already there"
+		fi
+    fi
+
+    if [ $1 = 'p' ];then
+		if [ -d $prevNode ] && [ ! -d $nextNode ];then
+			mv $currNode $nextNode && mv $prevNode $currNode
+		elif [ ! -d $prevNode ];then
+			echo "Previous site is not there"
+		elif [ -d $prevNode ];then
+			echo "Cannot move $currNode to $nextNode is already there"
+		fi
+    fi
+}
+
 # get database name and username from current site
 source_db=$(cat $document_root/app/etc/env.php | grep -o  "'dbname'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
 source_db_username=$(cat $document_root/app/etc/env.php | grep -o  "'username'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
@@ -68,6 +104,9 @@ if [ "$input" = "y" ];then
 
    $composer update
 
+   git reset --hard HEAD &&
+   git pull origin $git_branch
+
    mage=$site_next'/bin/magento'
    
    $php -dmemory_limit=-1  $mage setup:upgrade &&
@@ -77,21 +116,10 @@ if [ "$input" = "y" ];then
 fi
 
 # publish next site to current site
-read -p "Press y to move $site_next to $document_root: " input
-if [ -d  $site_next ] && [ "$input" = "y" ];then
-    if [ -d $site_prev ];then
-       rm -rf $site_prev;
-    fi
-    echo "$document_root moved to $site_prev and $site_next moved to $document_root"
-    mv $document_root $site_prev && mv $site_next $document_root
+read -p "Press n to move $site_next to $document_root and press p to move $site_prev to $document_root: " input
+if [ "$input" = "n" ];then
+   move "n"
 fi
-
-# restore from previous site to current site
-read -p "Press y to move $site_prev to $document_root: " input
-if [ -d $site_prev ] && [ "$input" = "y" ];then
-    if [ -d $site_next ];then
-        rm -rf $site_next;
-    fi
-    echo "$document_root moved to $site_next and $site_prev moved to $document_root"
-    mv $document_root $site_next && mv $site_prev $document_root
+if [ "$input" = "p" ];then
+   move "p"
 fi
