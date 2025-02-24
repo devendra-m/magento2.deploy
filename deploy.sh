@@ -115,7 +115,7 @@ if [ "$input" = "y" ];then
    $php -dmemory_limit=-1  $mage cache:flush
 fi
 
-# publish next site to current site
+# publish next site to current site or restore from previous site
 read -p "Press n to move $site_next to $document_root and press p to move $site_prev to $document_root: " input
 if [ "$input" = "n" ];then
    move "n"
