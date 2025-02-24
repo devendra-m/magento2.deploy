@@ -27,6 +27,7 @@ dest_db_username=$(config "db_username")
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
 
+# index of current site
 current=1
 
 list='"'$site_prev'","'$document_root'","'$site_next'"'
