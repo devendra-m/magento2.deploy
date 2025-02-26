@@ -7,7 +7,7 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
-    cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
+	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
 }
 
 # document_root of magento 2
@@ -39,11 +39,11 @@ node(){
 }
 move(){
 
-    prevNode=$(node $(($current-1)))
-    currNode=$(node $current)
-    nextNode=$(node $(($current+1)))
-
-    if [ $1 = 'n' ];then
+	prevNode=$(node $(($current-1)))
+	currNode=$(node $current)
+	nextNode=$(node $(($current+1)))
+	
+	if [ $1 = 'n' ];then
 		if [ -d $nextNode ] && [ ! -d $prevNode ];then
 			mv $currNode $prevNode && mv $nextNode $currNode
 		elif [ ! -d $nextNode ];then
@@ -51,9 +51,9 @@ move(){
 		elif [ -d $prevNode ];then
 			echo "Cannot move $currNode to $prevNode is already there"
 		fi
-    fi
-
-    if [ $1 = 'p' ];then
+	fi
+	
+	if [ $1 = 'p' ];then
 		if [ -d $prevNode ] && [ ! -d $nextNode ];then
 			mv $currNode $nextNode && mv $prevNode $currNode
 		elif [ ! -d $prevNode ];then
@@ -61,7 +61,7 @@ move(){
 		elif [ -d $prevNode ];then
 			echo "Cannot move $currNode to $nextNode is already there"
 		fi
-    fi
+	fi
 }
 
 env(){ 
@@ -77,63 +77,63 @@ source_db_username=$(env "username")
 read -p "Press y to create new database $dest_db: " input
 
 if [ "$input" = "y" ];then
-     echo 'Import to new database '$dest_db
-     echo 'Current site '$source_db' password '
-     mysqldump --no-tablespaces --single-transaction -u $source_db_username -p $source_db > $document_root/var/$source_db.sql &&
-     
-     echo 'New db '$dest_db' password'
-     mysql -u $dest_db_username -p $dest_db < $document_root/var/$source_db.sql
-
-     rm $document_root/var/$source_db.sql
+	echo 'Import to new database '$dest_db
+	echo 'Current site '$source_db' password '
+	mysqldump --no-tablespaces --single-transaction -u $source_db_username -p $source_db > $document_root/var/$source_db.sql &&
+	
+	echo 'New db '$dest_db' password'
+	mysql -u $dest_db_username -p $dest_db < $document_root/var/$source_db.sql
+	
+	rm $document_root/var/$source_db.sql
 fi
 
 # fetch from git and deploy in next site directory
 read -p "Press y to deploy $site_next:" input
 
 if [ "$input" = "y" ];then
-   if [ -d $site_next ];then
-       rm -rf $site_next;
-   fi
-   mkdir $site_next && cd $site_next
-   
-   git init
-   git remote add origin git@github:$git_repo
-   git pull origin $git_branch
-   git checkout $git_branch
-
-   # copy env.php and config.php to next site
-   cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_next/app/etc
-
-   # change database name in next site env.php
-   sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
-
-
-   read -p "Press y to copy media from $document_root/pub/media to $site_next/pub/:" input
-   
-   if [ "$input" = "y" ];then
-   	echo "Copy media files:"
-   	cp -R $document_root/pub/media  $site_next/pub/
-   fi
-
-   $composer update
-
-   git reset --hard HEAD &&
-   git pull origin $git_branch
-
-   mage=$site_next'/bin/magento'
-   
-   $php -dmemory_limit=-1  $mage setup:upgrade &&
-   $php -dmemory_limit=-1  $mage setup:di:compile &&
-   $php -dmemory_limit=-1  $mage setup:static-content:deploy -f $locales &&
-   $php -dmemory_limit=-1  $mage cache:flush
+	if [ -d $site_next ];then
+	rm -rf $site_next;
+	fi
+	mkdir $site_next && cd $site_next
+	
+	git init
+	git remote add origin git@github:$git_repo
+	git pull origin $git_branch
+	git checkout $git_branch
+	
+	# copy env.php and config.php to next site
+	cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_next/app/etc
+	
+	# change database name in next site env.php
+	sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
+	
+	
+	read -p "Press y to copy media from $document_root/pub/media to $site_next/pub/:" input
+	
+	if [ "$input" = "y" ];then
+	echo "Copy media files:"
+	cp -R $document_root/pub/media  $site_next/pub/
+	fi
+	
+	$composer update
+	
+	git reset --hard HEAD &&
+	git pull origin $git_branch
+	
+	mage=$site_next'/bin/magento'
+	
+	$php -dmemory_limit=-1  $mage setup:upgrade &&
+	$php -dmemory_limit=-1  $mage setup:di:compile &&
+	$php -dmemory_limit=-1  $mage setup:static-content:deploy -f $locales &&
+	$php -dmemory_limit=-1  $mage cache:flush
 fi
 
 # publish next site to current site or restore from previous site
 read -p "Press n to move $site_next to $document_root and press p to move $site_prev to $document_root: " input
 
 if [ "$input" = "n" ];then
-   move "n"
+	move "n"
 fi
 if [ "$input" = "p" ];then
-   move "p"
+	move "p"
 fi
