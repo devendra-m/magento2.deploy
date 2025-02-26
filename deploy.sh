@@ -14,7 +14,7 @@ config(){
 validate(){
 	for arg in $@
 	do
- 		echo $arg
+ 		echo "$arg"
  	done 	
   	exit
 }
