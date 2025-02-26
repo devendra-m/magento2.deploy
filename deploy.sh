@@ -7,16 +7,17 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
-	$(cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g")
+	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
 }
 
 # validate fields 
 validate(){
 	for arg in $@
 	do
- 		echo "$arg"
- 	done 	
-  	exit
+ 		if [ -z "$arg" ];then
+   			echo "Please enter $arg value"
+   		fi
+ 	done 	  	
 }
 
 # document_root of magento 2
