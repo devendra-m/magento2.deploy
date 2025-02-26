@@ -7,7 +7,13 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
-     	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
+	configValue=$(cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g")
+	
+	if [ -z $configValue ];then
+		echo "Please enter $1 value in deploy.conf"
+  		exit
+	fi
+
 }
 
 # document_root of magento 2
@@ -32,11 +38,13 @@ current=1
 
 list='"'$site_prev'","'$document_root'","'$site_next'"'
 
+# get node by index
 node(){
 	node=$(($1+1))
 	echo $list | sed 's/,/\n/g' | tail -n +$node | head -n 1 | grep -o "[^'\"]*"
 }
 
+# move node next to current and current to previous and previous to current and current to next 
 move(){
 	prevNode=$(node $(($current-1)))
 	currNode=$(node $current)
@@ -63,10 +71,12 @@ move(){
 	fi
 }
 
+# get database info from env.php
 env(){ 
 	cat $document_root/app/etc/env.php | grep ".*" | awk '{printf("%s ",$0)}' | grep -oP "'db'\s*=>(.(?!\]\s*\]\s*\]))*\s*.\s*.\s*." | grep -o  "'$1'\s*=>\s*'[^']*'\s*," | grep -o "'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*"
 }
 
+# import current site db to next site db
 newdb(){
 	echo 'Import to new database '$dest_db
 	echo 'Current site '$source_db' password '
