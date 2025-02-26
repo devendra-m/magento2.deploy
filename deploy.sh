@@ -9,7 +9,7 @@ deploy_dir=$(realpath $0 | xargs dirname)
 config(){
 	configValue=$(cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g")
 	
-	if [ -z $configValue ];then
+	if [ -z "$configValue" ];then
 		echo "Please enter $1 value in deploy.conf"
   		exit
 	fi
