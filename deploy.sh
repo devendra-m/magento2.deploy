@@ -14,11 +14,14 @@ config(){
 validate(){
 	for arg in $@
 	do
- 		if [ -z ${arg} ];then
-   			echo "Please enter $arg value"
+		value=$(echo "${!arg}" | sed 's/^\s*\(.*\)\s*$/\1/g')
+		if [ "$value" = "" ];then
+   			echo "Please enter $arg value in deploy.conf"
+			exit
    		fi
  	done 	  	
 }
+
 
 # document_root of magento 2
 document_root=$(config "document_root")
@@ -34,7 +37,7 @@ git_repo=$(config "git_repo")
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
-validate $document_root $locales $git_branch $git_repo $dest_db $dest_db_username
+validate "document_root" "locales" "git_branch" "git_repo" "dest_db" "dest_db_username"
 
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
