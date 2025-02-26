@@ -75,6 +75,7 @@ source_db_username=$(env "username")
 
 # database from current site will be imported to new build database
 read -p "Press y to create new database $dest_db: " input
+
 if [ "$input" = "y" ];then
      echo 'Import to new database '$dest_db
      echo 'Current site '$source_db' password '
@@ -88,6 +89,7 @@ fi
 
 # fetch from git and deploy in next site directory
 read -p "Press y to deploy $site_next:" input
+
 if [ "$input" = "y" ];then
    if [ -d $site_next ];then
        rm -rf $site_next;
@@ -105,8 +107,13 @@ if [ "$input" = "y" ];then
    # change database name in next site env.php
    sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
 
-   echo "Copy media files:"
-   cp -R $document_root/pub/media  $site_next/pub/
+
+   read -p "Press y to copy media from $document_root/pub/media to $site_next/pub/:" input
+   
+   if [ "$input" = "y" ];then
+   	echo "Copy media files:"
+   	cp -R $document_root/pub/media  $site_next/pub/
+   fi
 
    $composer update
 
@@ -123,6 +130,7 @@ fi
 
 # publish next site to current site or restore from previous site
 read -p "Press n to move $site_next to $document_root and press p to move $site_prev to $document_root: " input
+
 if [ "$input" = "n" ];then
    move "n"
 fi
