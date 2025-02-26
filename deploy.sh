@@ -92,7 +92,7 @@ read -p "Press y to deploy $site_next:" input
 
 if [ "$input" = "y" ];then
 	if [ -d $site_next ];then
-	rm -rf $site_next;
+		rm -rf $site_next;
 	fi
 	mkdir $site_next && cd $site_next
 	
@@ -111,8 +111,8 @@ if [ "$input" = "y" ];then
 	read -p "Press y to copy media from $document_root/pub/media to $site_next/pub/:" input
 	
 	if [ "$input" = "y" ];then
-	echo "Copy media files:"
-	cp -R $document_root/pub/media  $site_next/pub/
+		echo "Copy media files:"
+		cp -R $document_root/pub/media  $site_next/pub/
 	fi
 	
 	$composer update
