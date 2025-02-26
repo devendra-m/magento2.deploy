@@ -7,7 +7,7 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
-	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
+     	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
 }
 
 # document_root of magento 2
