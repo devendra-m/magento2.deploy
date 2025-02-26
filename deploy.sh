@@ -12,14 +12,21 @@ config(){
 
 # function to validate fields 
 validate(){
+	validation='1'
+	IFS=$'\n'
 	for field in $(echo $1 | sed 's/,/\n/g')
 	do
- 		value=$(echo $field | grep -o  "'$2'\s*=>\s*'[^']*'\s*," | grep -o "'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*" | sed 's/^\s*\(.*\)\s*$/\1/g')
+		varname=$(echo $field | grep -o  ".*=>" | grep -o "\".*\"" | grep -o "[^\"]*")
+		value=$(echo $field | grep -o  "=>.*" | grep -o "\".*\"" | grep -o "[^\"]*" | sed 's/^\s*\(.*\)\s*$/\1/g')
 		if [ "$value" = "" ];then
-   			echo "Please enter $arg value in deploy.conf"
-			exit
+   			echo "Please enter $varname value in deploy.conf"
+			validation='0'
    		fi
  	done 	  	
+
+	if [ $validation -eq "0" ]; then
+		exit
+	fi
 }
 
 # document_root of magento 2
@@ -36,8 +43,9 @@ git_repo=$(config "git_repo")
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
-# validate fields 
-validate "'document_root' => ','locales','git_branch','git_repo','dest_db','dest_db_username'"
+# validate fields in configuration
+fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
+validate "$fields"
 
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
