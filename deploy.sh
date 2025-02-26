@@ -10,7 +10,7 @@ config(){
 	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
 }
 
-# validate fields 
+# function to validate fields 
 validate(){
 	for arg in $@
 	do
@@ -21,7 +21,6 @@ validate(){
    		fi
  	done 	  	
 }
-
 
 # document_root of magento 2
 document_root=$(config "document_root")
@@ -37,6 +36,7 @@ git_repo=$(config "git_repo")
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
+# validate fields 
 validate "document_root" "locales" "git_branch" "git_repo" "dest_db" "dest_db_username"
 
 site_next=$deploy_dir/'site_next'
