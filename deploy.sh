@@ -7,13 +7,16 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 # function to get configuration values
 config(){
-	configValue=$(cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g")
-	
-	if [ -z "$configValue" ];then
-		echo "Please enter $1 value in deploy.conf"
-  		exit
-	fi
+	$(cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g")
+}
 
+# validate fields 
+validate(){
+	for arg in $@
+	do
+ 		echo $arg
+ 	done 	
+  	exit
 }
 
 # document_root of magento 2
@@ -29,6 +32,8 @@ git_repo=$(config "git_repo")
 # new site database name and username
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
+
+validate $document_root $locales $git_branch $git_repo $dest_db $dest_db_username
 
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
