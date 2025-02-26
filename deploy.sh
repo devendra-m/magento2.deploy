@@ -64,9 +64,14 @@ move(){
     fi
 }
 
+env(){ 
+	cat $document_root/app/etc/env.php | grep ".*" | awk '{printf("%s ",$0)}' | grep -oP "'db'\s*=>(.(?!\]\s*\]\s*\]))*\s*.\s*.\s*." | grep -o  "'$1'\s*=>\s*'[^']*'\s*," | grep -o "'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*"
+}
+
+
 # get database name and username from current site
-source_db=$(cat $document_root/app/etc/env.php | grep -o  "'dbname'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
-source_db_username=$(cat $document_root/app/etc/env.php | grep -o  "'username'\s*=>\s*'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*")
+source_db=$(env "dbname")
+source_db_username=$(env "username")
 
 # database from current site will be imported to new build database
 read -p "Press y to create new database $dest_db: " input
