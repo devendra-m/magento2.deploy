@@ -114,7 +114,6 @@ deploy(){
 	$php -dmemory_limit=-1  $mage setup:di:compile &&
 	$php -dmemory_limit=-1  $mage setup:static-content:deploy -f $locales &&
 	$php -dmemory_limit=-1  $mage cache:flush
-fi
 }
 
 # get database name and username from current site
