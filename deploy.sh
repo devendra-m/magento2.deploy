@@ -35,10 +35,9 @@ list='"'$site_prev'","'$document_root'","'$site_next'"'
 node(){
 	node=$(($1+1))
 	echo $list | sed 's/,/\n/g' | tail -n +$node | head -n 1 | grep -o "[^'\"]*"
-
 }
-move(){
 
+move(){
 	prevNode=$(node $(($current-1)))
 	currNode=$(node $current)
 	nextNode=$(node $(($current+1)))
@@ -68,15 +67,7 @@ env(){
 	cat $document_root/app/etc/env.php | grep ".*" | awk '{printf("%s ",$0)}' | grep -oP "'db'\s*=>(.(?!\]\s*\]\s*\]))*\s*.\s*.\s*." | grep -o  "'$1'\s*=>\s*'[^']*'\s*," | grep -o "'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*"
 }
 
-
-# get database name and username from current site
-source_db=$(env "dbname")
-source_db_username=$(env "username")
-
-# database from current site will be imported to new build database
-read -p "Press y to create new database $dest_db: " input
-
-if [ "$input" = "y" ];then
+newdb(){
 	echo 'Import to new database '$dest_db
 	echo 'Current site '$source_db' password '
 	mysqldump --no-tablespaces --single-transaction -u $source_db_username -p $source_db > $document_root/var/$source_db.sql &&
@@ -85,15 +76,13 @@ if [ "$input" = "y" ];then
 	mysql -u $dest_db_username -p $dest_db < $document_root/var/$source_db.sql
 	
 	rm $document_root/var/$source_db.sql
-fi
+}
 
-# fetch from git and deploy in next site directory
-read -p "Press y to deploy $site_next:" input
-
-if [ "$input" = "y" ];then
+deploy(){
 	if [ -d $site_next ];then
 		rm -rf $site_next;
 	fi
+ 
 	mkdir $site_next && cd $site_next
 	
 	git init
@@ -105,8 +94,7 @@ if [ "$input" = "y" ];then
 	cp $document_root/app/etc/env.php $document_root/app/etc/config.php $site_next/app/etc
 	
 	# change database name in next site env.php
-	sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php
-	
+	sed -i "s/'dbname'\s*=>\s*'.*'/'dbname' => '$dest_db'/g" $site_next/app/etc/env.php	
 	
 	read -p "Press y to copy media from $document_root/pub/media to $site_next/pub/:" input
 	
@@ -126,6 +114,25 @@ if [ "$input" = "y" ];then
 	$php -dmemory_limit=-1  $mage setup:di:compile &&
 	$php -dmemory_limit=-1  $mage setup:static-content:deploy -f $locales &&
 	$php -dmemory_limit=-1  $mage cache:flush
+fi
+}
+
+# get database name and username from current site
+source_db=$(env "dbname")
+source_db_username=$(env "username")
+
+# database from current site will be imported to new site database
+read -p "Press y to create new database $dest_db: " input
+
+if [ "$input" = "y" ];then
+	newdb
+fi
+
+# fetch from git and deploy in next site directory
+read -p "Press y to deploy $site_next:" input
+
+if [ "$input" = "y" ];then
+	deploy
 fi
 
 # publish next site to current site or restore from previous site
