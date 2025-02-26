@@ -14,7 +14,7 @@ config(){
 validate(){
 	for arg in $@
 	do
- 		if [ -z "$arg" ];then
+ 		if [ -z ${arg} ];then
    			echo "Please enter $arg value"
    		fi
  	done 	  	
