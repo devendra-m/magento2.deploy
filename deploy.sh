@@ -97,7 +97,7 @@ if [ "$input" = "y" ];then
 	mkdir $site_next && cd $site_next
 	
 	git init
-	git remote add origin git@github:$git_repo
+	git remote add origin $git_repo
 	git pull origin $git_branch
 	git checkout $git_branch
 	
