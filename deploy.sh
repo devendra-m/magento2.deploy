@@ -12,9 +12,9 @@ config(){
 
 # function to validate fields 
 validate(){
-	for arg in $@
+	for field in $(echo $1 | sed 's/,/\n/g')
 	do
-		value=$(echo "${!arg}" | sed 's/^\s*\(.*\)\s*$/\1/g')
+ 		value=$(echo $field | grep -o  "'$2'\s*=>\s*'[^']*'\s*," | grep -o "'.*'" | grep -o "=>\s*'.*'" | grep -o "'.*'" | grep -o "[^']*" | sed 's/^\s*\(.*\)\s*$/\1/g')
 		if [ "$value" = "" ];then
    			echo "Please enter $arg value in deploy.conf"
 			exit
@@ -37,7 +37,7 @@ dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
 # validate fields 
-validate "document_root" "locales" "git_branch" "git_repo" "dest_db" "dest_db_username"
+validate "'document_root' => ','locales','git_branch','git_repo','dest_db','dest_db_username'"
 
 site_next=$deploy_dir/'site_next'
 site_prev=$deploy_dir/'site_prev'
@@ -49,15 +49,15 @@ list='"'$site_prev'","'$document_root'","'$site_next'"'
 
 # get node by index
 node(){
-	node=$(($1+1))
-	echo $list | sed 's/,/\n/g' | tail -n +$node | head -n 1 | grep -o "[^'\"]*"
+	node=$(($2+1))
+	echo $1 | sed 's/,/\n/g' | tail -n +$node | head -n 1 | grep -o "[^'\"]*"
 }
 
 # move node next to current and current to previous and previous to current and current to next 
 move(){
-	prevNode=$(node $(($current-1)))
-	currNode=$(node $current)
-	nextNode=$(node $(($current+1)))
+	prevNode=$(node $list $(($current-1)))
+	currNode=$(node $list $current)
+	nextNode=$(node $list $(($current+1)))
 	
 	if [ $1 = 'n' ];then
 		if [ -d $nextNode ] && [ ! -d $prevNode ];then
