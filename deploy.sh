@@ -27,9 +27,6 @@ file(){
 
  	if [ ! -f $filename ];then  		
     		echo $(initialize) > $filename;
-    	else
-     		echo "$filename does not exists"
-       		exit
   	fi
 }
 
