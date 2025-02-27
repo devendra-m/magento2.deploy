@@ -23,7 +23,7 @@ initialize(){
 
 # check configuration file
 file(){
-	filename=$(echo $deploy_dir/deploy.conf)
+	filename=$deploy_dir/deploy.conf
 
  	if [ ! -f $filename ] && [ -w $filename ];then  		
     		echo $(initialize) > $filename;
