@@ -6,9 +6,9 @@ php=$(which php)
 deploy_dir=$(realpath $0 | xargs dirname)
 
 initialize(){
-	echo "# document root path for magento 2\n"
- 	echo "document_root='/var/www/html'\n"
-  	echo "\n"
+	echo -e "# document root path for magento 2"
+ 	echo -e "document_root='/var/www/html'"
+  	echo -e ""
    	echo  "# locales of site\n"
     	echo "locales='en_US en_GB'\n"
      	echo "\n"
