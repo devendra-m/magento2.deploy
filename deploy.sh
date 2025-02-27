@@ -56,6 +56,9 @@ validate(){
 	fi
 }
 
+# check if configuration file exists
+file
+
 # document_root of magento 2
 document_root=$(config "document_root")
 
