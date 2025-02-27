@@ -50,35 +50,6 @@ validate(){
 	fi
 }
 
-# check if configuration file exists
-file
-
-# document_root of magento 2
-document_root=$(config "document_root")
-
-# locales of site
-locales=$(config "locales")
-
-# git branch name and repository link
-git_branch=$(config "git_branch")
-git_repo=$(config "git_repo")
-
-# new site database name and username
-dest_db=$(config "db_name")
-dest_db_username=$(config "db_username")
-
-# validate fields in configuration
-fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
-validate "$fields"
-
-site_next=$deploy_dir/'sites/next'
-site_prev=$deploy_dir/'sites/prev'
-
-# index of current site
-current=1
-
-list='"'$site_prev'","'$document_root'","'$site_next'"'
-
 # get node by index
 node(){
 	node=$(($2+1))
@@ -129,6 +100,7 @@ newdb(){
 	rm $document_root/var/$source_db.sql
 }
 
+# deploy next site
 deploy(){
 	if [ -d $site_next ];then
 		rm -rf $site_next;
@@ -166,6 +138,35 @@ deploy(){
 	$php -dmemory_limit=-1  $mage setup:static-content:deploy -f $locales &&
 	$php -dmemory_limit=-1  $mage cache:flush
 }
+
+# check if configuration file exists
+file
+
+# document_root of magento 2
+document_root=$(config "document_root")
+
+# locales of site
+locales=$(config "locales")
+
+# git branch name and repository link
+git_branch=$(config "git_branch")
+git_repo=$(config "git_repo")
+
+# new site database name and username
+dest_db=$(config "db_name")
+dest_db_username=$(config "db_username")
+
+# validate fields in configuration
+fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
+validate "$fields"
+
+site_next=$deploy_dir/'sites/next'
+site_prev=$deploy_dir/'sites/prev'
+
+# index of current site
+current=1
+
+list='"'$site_prev'","'$document_root'","'$site_next'"'
 
 # get database name and username from current site
 source_db=$(env "dbname")
