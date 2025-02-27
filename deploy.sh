@@ -5,29 +5,25 @@ php=$(which php)
 # directory path of deploy.sh file
 deploy_dir=$(realpath $0 | xargs dirname)
 
-initialize(){
-	echo "# document root path for magento 2"
- 	echo "document_root='/var/www/html'"
-  	echo ""
-   	echo  "# locales of site"
-    	echo "locales='en_US en_GB'"
-     	echo ""
-      	echo "# git branch and git repository"
-      	echo "git_branch='v2.4.7'"
-        echo "git_repo='git_username/git_repository'"
-        echo ""
-        echo "# database name and username of new deployed magento 2"
-        echo "db_name='database_name'"
-	echo "db_username='database_username'"
-}
-
-# check configuration file
+# function to check if configuration file exits
 file(){
-	filename=$deploy_dir/deploy.conf
+        filename=$deploy_dir/deploy.conf
 
- 	if [ ! -f $filename ];then  		
-    		echo $(initialize) > $filename;
-  	fi
+        if [ ! -f $filename ];then
+                echo "# document root path for magento 2
+                        document_root='/var/www/html'
+                        
+                      # locales of site
+                        locales='en_US en_GB'
+        
+                      # git branch and git repository
+                        git_branch=''
+                        git_repo=''
+        
+                      # database name and username of new deployed magento 2
+                        db_name=''
+                        db_username=''" | sed 's/^\s*//g' > $filename
+        fi
 }
 
 # function to get configuration values
