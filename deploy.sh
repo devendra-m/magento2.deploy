@@ -29,6 +29,7 @@ file(){
     		echo $(initialize) > $filename;
     	else
      		echo "$filename does not exists"
+       		exit
   	fi
 }
 
