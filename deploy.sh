@@ -78,8 +78,8 @@ dest_db_username=$(config "db_username")
 fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
 validate "$fields"
 
-site_next=$deploy_dir/'site_next'
-site_prev=$deploy_dir/'site_prev'
+site_next=$deploy_dir/'sites/next'
+site_prev=$deploy_dir/'sites/prev'
 
 # index of current site
 current=1
