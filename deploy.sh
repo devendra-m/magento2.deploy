@@ -25,7 +25,7 @@ initialize(){
 file(){
 	filename=$deploy_dir/deploy.conf
 
- 	if [ ! -f $filename ] && [ -w $filename ];then  		
+ 	if [ ! -f $filename ];then  		
     		echo $(initialize) > $filename;
     	else
      		echo "$filename does not exists"
