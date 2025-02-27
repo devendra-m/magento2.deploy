@@ -5,6 +5,33 @@ php=$(which php)
 # directory path of deploy.sh file
 deploy_dir=$(realpath $0 | xargs dirname)
 
+initialize(){
+	echo "# document root path for magento 2"
+ 	echo "document_root='/var/www/html'"
+  	echo ""
+   	echo  "# locales of site"
+    	echo "locales='en_US en_GB'"
+     	echo ""
+      	echo "# git branch and git repository"
+      	echo "git_branch='v2.4.7'"
+        echo "git_repo='git_username/git_repository'"
+        echo ""
+        echo "# database name and username of new deployed magento 2 "
+        echo "db_name='database_name'"
+	echo "db_username='database_username'"
+}
+
+# check configuration file
+file(){
+	filename=$1
+
+ 	if [ ! -f $filename ] && [ -w $filename ];then  		
+    		echo $(initialize) > $filename;
+    	else
+     		echo "$filename does not exists"
+  	fi
+}
+
 # function to get configuration values
 config(){
 	cat $deploy_dir/deploy.conf | grep "^[^#].*" | grep "$1" | sed "s/.*='\(.*\)'/\1/g"
