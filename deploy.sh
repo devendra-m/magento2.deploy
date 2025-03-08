@@ -77,7 +77,7 @@ move(){
 			mv $currNode $nextNode && mv $prevNode $currNode
 		elif [ ! -d $prevNode ];then
 			echo "Previous site is not there"
-		elif [ -d $prevNode ];then
+		elif [ -d $nextNode ];then
 			echo "Cannot move $currNode to $nextNode is already there"
 		fi
 	fi
