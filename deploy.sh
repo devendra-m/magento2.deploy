@@ -100,7 +100,7 @@ newdb(){
 	echo -e 'Current site '${hl_path}$source_db${nc}' password'
 	mysqldump --no-tablespaces --single-transaction -u $source_db_username -p $source_db > $document_root/var/$source_db.sql &&
 	
-	echo -e 'New db '${hl_path}$dest_db${nc}' password'
+	echo -e 'New site '${hl_path}$dest_db${nc}' password'
 	mysql -u $dest_db_username -p $dest_db < $document_root/var/$source_db.sql
 	
 	rm $document_root/var/$source_db.sql
@@ -183,8 +183,7 @@ source_db=$(env "dbname")
 source_db_username=$(env "username")
 
 # database from current site will be imported to new site database
-read -p $(echo -e "Enter [y] to transfer data to new database ${hl_path}$dest_db${nc}: ") input
-
+read -p $(echo -e "Enter [y] to transfer current database to new database ${hl_path}$dest_db${nc}: ") input
 
 if [ "$input" = "y" ];then
 	newdb
