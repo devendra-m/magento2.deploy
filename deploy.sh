@@ -190,15 +190,15 @@ current=1
 
 list='"'$site_prev'","'$document_root'","'$site_next'"'
 
-# get database name and username from current site
-source_db=$(env "dbname")
-source_db_username=$(env "username")
-
 # check if configuration file exists
 file
 
 # validate fields in configuration
 validate "$fields"
+
+# get database name and username from current site
+source_db=$(env "dbname")
+source_db_username=$(env "username")
 
 # confirm to proceed
 confirmation
