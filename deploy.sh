@@ -39,7 +39,7 @@ confirmation(){
 	echo -e "${hl_conf_text}New database name:${nc} ${hl_path}$(config "db_name")${nc}"
 	echo -e "${hl_conf_text}New database username:${nc} ${hl_path}$(config "db_username")${nc}"
 	echo -e "${hl_conf_text}New site deployment path:${nc} ${hl_path}$site_next${nc}"
- 	echo -e "${hl_conf_text}Previous site path:${nc} ${hl_path}$site_prev${nc}
+ 	echo -e "${hl_conf_text}Previous site path:${nc} ${hl_path}$site_prev${nc}"
  
 	read -p "Enter [y] to confirm configuration and proceed: " input
 
