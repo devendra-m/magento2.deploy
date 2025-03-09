@@ -7,6 +7,7 @@ deploy_dir=$(realpath $0 | xargs dirname)
 
 hl_path='\033[0;33m'
 hl_text='\033[0;34m'
+hl_conf_text='\033[0;32m'
 nc='\033[0m'
 
 # function to check if configuration file exits
@@ -28,6 +29,20 @@ file(){
                         db_name=''
                         db_username=''" | sed 's/^\s*//g' > $filename
         fi
+}
+
+confirmation(){
+	echo -e "${hl_conf_text}Document root:${nc} ${hl_path}$(config "document_root")${nc}"
+	echo -e "${hl_conf_text}Locales:${nc} ${hl_path}$(config "locales")${nc}"
+	echo -e "${hl_conf_text}Git Branch:${nc} ${hl_path}$(config "git_branch")${nc}"
+	echo -e "${hl_conf_text}Git Repository Link:${nc} ${hl_path}$(config "git_repo")${nc}"
+	echo -e "${hl_conf_text}New database name:${nc} ${hl_path}$(config "db_name")${nc}"
+	echo -e "${hl_conf_text}New database username:${nc} ${hl_path}$(config "db_username")${nc}"
+	read -p "Enter [y] to confirm configuration and proceed: " input
+
+	if [ ! "$input" = "y" ]; then
+		exit
+	fi
 }
 
 # function to get configuration values
@@ -102,10 +117,12 @@ newdb(){
 	
 	echo -e 'New site '${hl_path}$dest_db${nc}' password'
 	mysql -u $dest_db_username -p $dest_db < $document_root/var/$source_db.sql
-	
-	rm $document_root/var/$source_db.sql
 
-	echo -e "Database has been transferred to ${hl_path}$dest_db${nc}"
+	if [ $? -eq 0 ]; then
+		echo -e "Database has been transferred to ${hl_path}$dest_db${nc}"
+	fi
+
+	rm $document_root/var/$source_db.sql
 }
 
 # deploy next site
@@ -169,6 +186,8 @@ dest_db_username=$(config "db_username")
 # validate fields in configuration
 fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
 validate "$fields"
+
+confirmation
 
 site_next=$deploy_dir/'sites/next'
 site_prev=$deploy_dir/'sites/prev'
