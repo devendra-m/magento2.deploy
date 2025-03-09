@@ -183,11 +183,7 @@ git_repo=$(config "git_repo")
 dest_db=$(config "db_name")
 dest_db_username=$(config "db_username")
 
-# validate fields in configuration
 fields='"document_root" => "'$document_root'","locales"=>"'$locales'","git_branch"=>"'$git_branch'","git_repo"=>"'$git_repo'","dest_db"=>"'$dest_db'","dest_db_username"=>"'$dest_db_username'"'
-validate "$fields"
-
-confirmation
 
 site_next=$deploy_dir/'sites/next'
 site_prev=$deploy_dir/'sites/prev'
@@ -200,6 +196,12 @@ list='"'$site_prev'","'$document_root'","'$site_next'"'
 # get database name and username from current site
 source_db=$(env "dbname")
 source_db_username=$(env "username")
+
+# validate fields in configuration
+validate "$fields"
+
+# confirm to proceed
+confirmation
 
 # database from current site will be imported to new site database
 read -p $(echo -e "Enter [y] to transfer current database to new database ${hl_path}$dest_db${nc}: ") input
