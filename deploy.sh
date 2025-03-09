@@ -166,9 +166,6 @@ deploy(){
 	$php -dmemory_limit=-1  $mage cache:flush
 }
 
-# check if configuration file exists
-file
-
 # document_root of magento 2
 document_root=$(config "document_root")
 
@@ -196,6 +193,9 @@ list='"'$site_prev'","'$document_root'","'$site_next'"'
 # get database name and username from current site
 source_db=$(env "dbname")
 source_db_username=$(env "username")
+
+# check if configuration file exists
+file
 
 # validate fields in configuration
 validate "$fields"
