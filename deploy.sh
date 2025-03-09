@@ -38,8 +38,8 @@ confirmation(){
 	echo -e "${hl_conf_text}Git Repository Link:${nc} ${hl_path}$(config "git_repo")${nc}"
 	echo -e "${hl_conf_text}New database name:${nc} ${hl_path}$(config "db_name")${nc}"
 	echo -e "${hl_conf_text}New database username:${nc} ${hl_path}$(config "db_username")${nc}"
-	echo -e "${hl_conf_text}New site deployment path:${nc} ${hl_path}${nc}"
- 	echo -e "${hl_conf_text}Previous site path:${nc} ${hl_path}${nc}"
+	echo -e "${hl_conf_text}New site deployment path:${nc} ${hl_path}$2${nc}"
+ 	echo -e "${hl_conf_text}Previous site path:${nc} ${hl_path}$3${nc}"
  
 	read -p "Enter [y] to confirm configuration and proceed: " input
 
@@ -62,7 +62,7 @@ validate(){
 		varname=$(echo $field | grep -o  ".*=>" | grep -o "\".*\"" | grep -o "[^\"]*")
 		value=$(echo $field | grep -o  "=>.*" | grep -o "\".*\"" | grep -o "[^\"]*" | sed 's/^\s*\(.*\)\s*$/\1/g')
 		if [ "$value" = "" ];then
-   			echo "Please enter $varname value in deploy.conf"
+   			echo -e "Please enter $varname value in ${hl_path}"$deploy_dir"/deploy.conf${nc}"
 			validation='0'
    		fi
  	done 	  	
@@ -169,6 +169,9 @@ deploy(){
 	$php -dmemory_limit=-1  $mage cache:flush
 }
 
+# check if configuration file exists
+file
+
 # document_root of magento 2
 document_root=$(config "document_root")
 
@@ -193,9 +196,6 @@ current=1
 
 list='"'$site_prev'","'$document_root'","'$site_next'"'
 
-# check if configuration file exists
-file
-
 # validate fields in configuration
 validate "$fields"
 
@@ -203,8 +203,9 @@ validate "$fields"
 source_db=$(env "dbname")
 source_db_username=$(env "username")
 
+
 # confirm to proceed
-confirmation
+confirmation $fields $site_next $site_prev
 
 # database from current site will be imported to new site database
 read -p $(echo -e "Enter [y] to transfer current database to new database ${hl_path}$dest_db${nc}: ") input
